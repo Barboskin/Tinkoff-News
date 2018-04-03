@@ -64,7 +64,7 @@ public class DetailActivity extends AppCompatActivity implements NewsDetailContr
 
     @Override
     public void setPresenter(NewsDetailContract.Presenter presenter) {
-
+        this.presenter = presenter;
     }
 
     @Override
