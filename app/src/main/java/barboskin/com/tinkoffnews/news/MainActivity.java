@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity implements NewsContract.View
     @BindView(R.id.main_error)
     TextView errorMessage;
 
-    List<News> news = new ArrayList<>();
     NewsAdapter adapter;
 
     @Inject
@@ -52,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements NewsContract.View
 
         ButterKnife.bind(this);
 
-        App.getAppComponent().inject(this);
+        App.getComponentsHolder().getNewsComponent().inject(this);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -61,13 +60,11 @@ public class MainActivity extends AppCompatActivity implements NewsContract.View
                 linearLayoutManager.getOrientation());
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        adapter = new NewsAdapter(this, news);
+        adapter = new NewsAdapter(this);
         adapter.addOnItemClickListener(new NewsAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View itemView, int position, View view) {
-                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-                intent.putExtra(DetailActivity.NEWS_ID, news.get(position).getId());
-                startActivity(intent);
+                DetailActivity.startActivity(MainActivity.this, adapter.getNews().get(position).getId());
             }
         });
         recyclerView.setAdapter(adapter);
@@ -85,6 +82,10 @@ public class MainActivity extends AppCompatActivity implements NewsContract.View
         super.onDestroy();
         presenter.unsubscribe();
         presenter.dropView();
+
+        if (isFinishing()){
+            App.getComponentsHolder().releaseNewsComponent();
+        }
     }
 
     @Override
@@ -95,7 +96,6 @@ public class MainActivity extends AppCompatActivity implements NewsContract.View
     @Override
     public void showNews(List<News> news) {
         adapter.setNews(news);
-        this.news = news;
     }
 
     @Override

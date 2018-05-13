@@ -26,9 +26,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsHolder> {
     private List<News> news;
     private OnItemClickListener listener;
 
-    public NewsAdapter(Context context, List<News> news){
+    public NewsAdapter(Context context){
         inflater = LayoutInflater.from(context);
-        this.news = news;
     }
 
     @Override
@@ -57,6 +56,10 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsHolder> {
     public void setNews(List<News> news){
         this.news = news;
         notifyDataSetChanged();
+    }
+
+    public List<News> getNews(){
+        return news;
     }
 
     public class NewsHolder extends RecyclerView.ViewHolder implements View.OnClickListener{

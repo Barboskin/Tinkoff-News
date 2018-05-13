@@ -2,9 +2,7 @@ package barboskin.com.tinkoffnews;
 
 import android.app.Application;
 
-import barboskin.com.tinkoffnews.di.AppComponent;
-import barboskin.com.tinkoffnews.di.modules.ContextModule;
-import barboskin.com.tinkoffnews.di.DaggerAppComponent;
+import barboskin.com.tinkoffnews.di.ComponentsHolder;
 
 /**
  * Created by Maestro on 31.03.2018.
@@ -12,18 +10,16 @@ import barboskin.com.tinkoffnews.di.DaggerAppComponent;
 
 public class App extends Application {
 
-    private static AppComponent appComponent;
+    private static ComponentsHolder componentsHolder;
+
+    public static ComponentsHolder getComponentsHolder(){
+        return componentsHolder;
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        appComponent = DaggerAppComponent.builder()
-                .contextModule(new ContextModule(this))
-                .build();
-
-    }
-
-    public static AppComponent getAppComponent() {
-        return appComponent;
+        componentsHolder = new ComponentsHolder(this);
+        componentsHolder.init();
     }
 }

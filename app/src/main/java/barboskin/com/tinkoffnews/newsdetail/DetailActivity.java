@@ -1,26 +1,21 @@
 package barboskin.com.tinkoffnews.newsdetail;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import javax.inject.Inject;
 
 import barboskin.com.tinkoffnews.App;
 import barboskin.com.tinkoffnews.R;
-import barboskin.com.tinkoffnews.data.NewsRepository;
 import barboskin.com.tinkoffnews.data.model.News;
-import barboskin.com.tinkoffnews.data.network.TinkoffNewsApiService;
-import barboskin.com.tinkoffnews.di.AppComponent;
-import barboskin.com.tinkoffnews.utils.RxUtils;
 import barboskin.com.tinkoffnews.utils.StringUtils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 public class DetailActivity extends AppCompatActivity implements NewsDetailContract.View {
 
@@ -41,6 +36,12 @@ public class DetailActivity extends AppCompatActivity implements NewsDetailContr
     @Inject
     NewsDetailContract.Presenter presenter;
 
+    public static void startActivity(Context context, int newsId){
+        Intent intent = new Intent(context, DetailActivity.class);
+        intent.putExtra(NEWS_ID, newsId);
+        context.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +51,7 @@ public class DetailActivity extends AppCompatActivity implements NewsDetailContr
 
         int id = getIntent().getIntExtra(NEWS_ID, 0);
 
-        App.getAppComponent().inject(this);
+        App.getComponentsHolder().getNewsDetailComponent().inject(this);
         presenter.takeView(this);
         presenter.loadNews(id);
     }
@@ -60,6 +61,10 @@ public class DetailActivity extends AppCompatActivity implements NewsDetailContr
         super.onDestroy();
         presenter.unsubscribe();
         presenter.dropView();
+
+        if (isFinishing()){
+            App.getComponentsHolder().releaseNewsDetailComponent();
+        }
     }
 
     @Override
